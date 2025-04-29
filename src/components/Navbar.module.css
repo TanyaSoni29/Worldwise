@@ -1,0 +1,18 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+}
+
+/* here we can't use direct tag we have to use class if we want to define the css for that particular tag */
+/* module css added hash code after the css class in this way it is only applied to that component and it will never be same and does not cause issue in large application  */
+/* if we want to write global css here then we have wrap that classname inside the :global(.test) function now the class became global and can be used by writing className="test" */
+
+/* suppose we use module css and now i want to aplly the css for active class then we to wrap :global(.active) like this */
