@@ -78,9 +78,10 @@ export default App;
 // now we learn about storing state in the url ----
 // the url is excellent place to store ui state an alternative to useState in some situations. example - opening and closing of panel, currently selected item, list sorting order, applied list filters
 
-// Advantages-- 1. Easy way to store state in a global place, accessible to all component in the app.
-//              2. Good way to pass data from one page to next page where data have some temporary place in the app.
-//              3. Make it easy to bookmark and share the page with exact ui state it had at the time means suppose if you apply filter color and size and then you share the url with anyone then same filter is visible to that person also..
+// Advantages--
+// 1. Easy way to store state in a global place, accessible to all component in the app.
+// 2. Good way to pass data from one page to next page where data have some temporary place in the app.
+// 3. Make it easy to bookmark and share the page with exact ui state it had at the time means suppose if you apply filter color and size and then you share the url with anyone then same filter is visible to that person also..
 // how we do that with React router ?  --- www.example.com/app/cities/lisbon?lat=38.90&lng=-40.17 so app/cities we can state part as it is telling which component is rendering so it is not useful so best way is to describe in params and query strings... lisbon is params and lat= and lng= is query strings
 
 // programmatic navigation with use of useNavigation Custom Hook-- like we do when we call login and if it is successful the navigate("/") this is used inside handlers and event click means he/she not moving by clicking on any link...
