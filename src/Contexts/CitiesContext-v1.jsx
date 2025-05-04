@@ -35,6 +35,8 @@ function reducer(state, action) {
       };
     case "rejected":
       return { ...state, loading: false, error: action.payload };
+    default:
+      throw new Error("Unknown Actions");
   }
 }
 
