@@ -1,20 +1,84 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Map.module.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  MapContainer,
+  TileLayer,
+  Popup,
+  Marker,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
+import { useCities } from "../Contexts/CitiesContext";
+import { useGeolocation } from "../hooks/useGeoLocation";
+import Button from "./Button";
 
 export default function Map() {
-  const navigate = useNavigate()
-  const [searchPramas, setSearchParams] = useSearchParams();
-  const lat = searchPramas.get("lat");
-  const lng = searchPramas.get("lng");
+  const { cities } = useCities();
+  const [mapPosition, setMapPosition] = useState([40, 0]);
+  const [searchPramas] = useSearchParams();
+  const {
+    isLoading: isLoadingGeoPosition,
+    position: geoPositions,
+    getPosition,
+  } = useGeolocation();
+  const mapLat = searchPramas.get("lat");
+  const mapLng = searchPramas.get("lng");
+
+  // map Sink with the position in the List
+  useEffect(() => {
+    if (mapLat && mapLng) setMapPosition([mapLat, mapLng]);
+  }, [mapLat, mapLng]);
+
+  useEffect(() => {
+    if (geoPositions) setMapPosition([geoPositions.lat, geoPositions.lng]);
+  }, [geoPositions]);
+
   return (
-    <div className={styles.mapContainer} onClick={() => navigate("form")}>
-      <p>
-        Position: {lat}, {lng}
-      </p>
-      <button onClick={() => setSearchParams({ lat: 23, lng: 40 })}>
-        Change
-      </button>
+    <div className={styles.mapContainer}>
+      {!geoPositions && (
+        <Button type="position" onClick={getPosition}>
+          {isLoadingGeoPosition ? "Loading..." : "Use Your Position"}
+        </Button>
+      )}
+      <MapContainer
+        center={mapPosition}
+        zoom={6}
+        scrollWheelZoom={true}
+        className={styles.map}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        />
+        {cities.map((city) => (
+          <Marker
+            position={[city.position.lat, city.position.lng]}
+            key={city.id}
+          >
+            <Popup>
+              <span>{city.emoji}</span> <span>{city.cityName}</span>
+            </Popup>
+          </Marker>
+        ))}
+
+        <ChangeCenter position={mapPosition} />
+        <DetectClick />
+      </MapContainer>
     </div>
   );
+}
+
+function ChangeCenter({ position }) {
+  const map = useMap();
+  map.setView(position);
+  return null;
+}
+
+function DetectClick() {
+  const navigate = useNavigate();
+
+  useMapEvents({
+    click: (e) => navigate(`form?lat=${e.latlng.lat}&lng=${e.latlng.lng}`),
+  });
 }
