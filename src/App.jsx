@@ -1,18 +1,29 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import Homepage from "./pages/HomePage";
-import PageNotFound from "./pages/PageNotFound";
-import Pricing from "./pages/Pricing";
-import Product from "./pages/Product";
-import Login from "./pages/Login";
-import AppLayout from "./pages/AppLayout";
-import CityList from "./components/CityList";
 // import { useEffect, useState } from "react";
+
+// import Homepage from "./pages/HomePage";
+// import PageNotFound from "./pages/PageNotFound";
+// import Pricing from "./pages/Pricing";
+// import Product from "./pages/Product";
+// import Login from "./pages/Login";
+// import AppLayout from "./pages/AppLayout";
+import { lazy, Suspense } from "react";
+
+const Homepage = lazy(() => import("./pages/Homepage"));
+const PageNotFound = lazy(() => import("./pages/PageNotFound"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Product = lazy(() => import("./pages/Product"));
+const Login = lazy(() => import("./pages/Login"));
+const AppLayout = lazy(() => import("./pages/AppLayout"));
+
+import CityList from "./components/CityList";
 import CountryList from "./components/CountryList";
 import City from "./components/City";
 import Form from "./components/Form";
 import { CitiesProvider } from "./Contexts/CitiesContext";
 import { AuthProvider } from "./Contexts/FakeAuthContext";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import SpinnerFullPage from "./components/SpinnerFullPage";
 
 // const BASE_URL = "http://localhost:3000";
 
@@ -46,39 +57,41 @@ function App() {
         <CitiesProvider>
           {/* if you want any header or navbar we can write here this remain same in all other pages */}
           <BrowserRouter>
-            <Routes>
-              <Route path="login" element={<Login />} />
-              <Route index element={<Homepage />} />
-              <Route path="product" element={<Product />} />
-              <Route path="pricing" element={<Pricing />} />
-              {/* Nested Routing */}
-              <Route
-                path="app"
-                element={
-                  <ProtectedRoute>
-                    <AppLayout />
-                  </ProtectedRoute>
-                }
-              >
-                {/* if we want to render any route by default then we do indexing means we use index key word */}
-                <Route index element={<Navigate replace to="cities" />} />
-                {/* <Route
+            <Suspense fallback={<SpinnerFullPage />}>
+              <Routes>
+                <Route path="login" element={<Login />} />
+                <Route index element={<Homepage />} />
+                <Route path="product" element={<Product />} />
+                <Route path="pricing" element={<Pricing />} />
+                {/* Nested Routing */}
+                <Route
+                  path="app"
+                  element={
+                    <ProtectedRoute>
+                      <AppLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  {/* if we want to render any route by default then we do indexing means we use index key word */}
+                  <Route index element={<Navigate replace to="cities" />} />
+                  {/* <Route
                 path="cities"
                 element={<CityList cities={cities} loading={loading} />}
               /> when contextApi is not used */}
-                <Route path="cities" element={<CityList />} />
-                {/* example of storing state in params */}
-                <Route path="cities/:id" element={<City />} />
-                {/* <Route
+                  <Route path="cities" element={<CityList />} />
+                  {/* example of storing state in params */}
+                  <Route path="cities/:id" element={<City />} />
+                  {/* <Route
                 path="countries"
                 element={<CountryList cities={cities} loading={loading} />}
               /> when contextApi is not Used */}
-                <Route path="countries" element={<CountryList />} />
-                <Route path="form" element={<Form />} />
-              </Route>
-              {/* this star path route met when all defined route path not match then this Page not Found route will be displayed */}
-              <Route path="*" element={<PageNotFound />} />
-            </Routes>
+                  <Route path="countries" element={<CountryList />} />
+                  <Route path="form" element={<Form />} />
+                </Route>
+                {/* this star path route met when all defined route path not match then this Page not Found route will be displayed */}
+                <Route path="*" element={<PageNotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </CitiesProvider>
       </AuthProvider>
@@ -103,3 +116,5 @@ export default App;
 
 // programmatic navigation with use of useNavigation Custom Hook-- like we do when we call login and if it is successful the navigate("/") this is used inside handlers and event click means he/she not moving by clicking on any link...
 // Benefit of Navigate element from react Router when we using index then our url is not set so for redirecting to that url we use Navigate as shown above if we does not use replace key word then we can't move back with that arrow before url.... this is used when we can't use useNavigate hook so this is Declarative way of doing that
+
+// Advantage of Lazy Load --- it is code spiting method and this will reduce the bundle size...
